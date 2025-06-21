@@ -128,6 +128,23 @@ class SurfaceFactory:
             surface_obj.thickness = kwargs.get("thickness", 0.0)
             return surface_obj
 
+        if surface_type == "plane_grating":
+            surface_obj = Surface(
+                geometry,
+                material_pre,
+                material_post,
+                is_stop,
+                is_reflective=is_reflective,
+                coating=coating,
+                surface_type=surface_type,
+                comment=comment,
+                aperture=kwargs.get("aperture"),
+            )
+            surface_obj.grating_order = kwargs.get("grating_order", 0)
+            surface_obj.grating_period = kwargs.get("grating_period", 0.0)
+            surface_obj.grating_orientation = kwargs.get("grating_orientation", 0.0)
+            return surface_obj
+
         # Standard surface - `surface_type` indicates geometrical shape of surface
         surface_obj = Surface(
             geometry,

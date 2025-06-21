@@ -163,6 +163,45 @@ class RealRays(BaseRays):
         self.M = self.M - 2 * dot * ny
         self.N = self.N - 2 * dot * nz
 
+    def diffract_plane_grating(
+        self, n1, n2, grating_order, grating_period, grating_orientation
+    ):
+        """Diffract rays on a plane grating.
+
+        Args:
+            n1: The refractive index of the medium before the grating.
+            n2: The refractive index of the medium after the grating.
+            grating_order: The order of diffraction.
+            grating_period: The period of the grating in wavelength units.
+            grating_orientation: The orientation angle of the grating.
+
+        Returns:
+            RealRays: The diffracted rays.
+
+        """
+        sign = be.sign(n1 / n2)
+        self.L0 = -(
+            self.L * be.cos(grating_orientation) 
+            - self.M * be.sin(grating_orientation)
+        )
+        self.M0 = -(
+            self.L * be.sin(grating_orientation) 
+            + self.M * be.cos(grating_orientation)
+        )
+        self.N0 = -be.copy(self.N)
+
+        self.L1 = self.L0 * n1 / n2
+        self.M1 = (self.M0 * n1 + grating_order * self.w / grating_period) / n2
+        self.N1 = sign * be.sqrt(1 - self.L1**2 - self.M1**2)
+
+        self.L = (self.L1 * be.cos(-grating_orientation) 
+                  - self.M1 * be.sin(-grating_orientation)
+        )
+        self.M = (self.L1 * be.sin(-grating_orientation) 
+                  + self.M1 * be.cos(-grating_orientation)
+        )
+        self.N = self.N1
+
     def update(self, jones_matrix: be.ndarray = None):
         """Update ray properties (primarily used for polarization)."""
 

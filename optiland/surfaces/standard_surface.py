@@ -166,12 +166,32 @@ class Surface:
         nx, ny, nz = self.geometry.surface_normal(rays)
 
         # Interact with surface (refract or reflect)
-        if self.is_reflective:
-            rays.reflect(nx, ny, nz)
-        else:
+        if self.surface_type == "plane_grating":
             n1 = self.material_pre.n(rays.w)
             n2 = self.material_post.n(rays.w)
-            rays.refract(nx, ny, nz, n1, n2)
+            if self.is_reflective:
+                rays.diffract_plane_grating(
+                    n1,
+                    -n1,
+                    self.grating_order,
+                    self.grating_period,
+                    self.grating_orientation,
+                )
+            else:
+                rays.diffract_plane_grating(
+                    n1,
+                    n2,
+                    self.grating_order,
+                    self.grating_period,
+                    self.grating_orientation,
+                )
+        else:
+            if self.is_reflective:
+                rays.reflect(nx, ny, nz)
+            else:
+                n1 = self.material_pre.n(rays.w)
+                n2 = self.material_post.n(rays.w)
+                rays.refract(nx, ny, nz, n1, n2)
 
         # if there is a surface scatter model, modify ray properties
         if self.bsdf:

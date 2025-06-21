@@ -96,6 +96,23 @@ def _create_standard(cs: CoordinateSystem, config: GeometryConfig):
     return StandardGeometry(cs, config.radius, config.conic)
 
 
+def _create_plane_grating(cs: CoordinateSystem, config: GeometryConfig):
+    """
+    Create a plane grating geometry
+
+    Args:
+        cs (CoordinateSystem): coordinate system of the geometry.
+        config (GeometryConfig): configuration of the geometry.
+
+    Returns:
+        Plane
+
+    """
+    if not be.isinf(config.radius):
+        raise ValueError("Plane grating must have infinite radius for a true plane.")
+    return Plane(cs)
+
+
 def _create_even_asphere(cs: CoordinateSystem, config: GeometryConfig):
     """
     Create an even asphere geometry
@@ -281,6 +298,7 @@ geometry_mapper = {
     "standard": _create_standard,
     "toroidal": _create_toroidal,
     "zernike": _create_zernike,
+    "plane_grating": _create_plane_grating,
 }
 
 
